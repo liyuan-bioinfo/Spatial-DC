@@ -4,7 +4,7 @@
   <img width="80%" src=workflow.jpg>
 </p>
 
-<p align="center"><strong>Framework of Spatial-DC (**S**patial-**D**igital **C**ytometry). </strong></p>
+<p align="center"><strong>A schematic graph for Spatial-DC (left) and subsequently downstream applications (right). </strong></p>
 
 ## Tutorial
 The details of how to run Spatial-DC are provided [Tutorials]
