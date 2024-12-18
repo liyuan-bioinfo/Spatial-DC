@@ -1,22 +1,18 @@
 # Spatial-DC
 [![python >3.8.12](https://img.shields.io/badge/python-3.8.12-brightgreen)](https://www.python.org/) 
 
-Spatial-DC (**s**patial-**D**igital **C**ytometry) is a robust deep learning-based method for deconvolution of spatial proteomics.
+Spatial-DC (**s**patial-**D**igital **C**ytometry) is a robust deep learning-based method for deconvolution of spatial proteomics, involving infers cell-type composition in each spot and reconstructs spatially and cell-type resolved proteomic profiles.
 
 <p align="center">
   <img width="80%" src=./images/workflow_A.jpg>
 </p>
-Spatial proteomics studies the spatial distribution of proteins within cells or tissues, providing a new perspective for comprehending cellular processes and disease mechanisms. One important challenge of current spatial proteomics technologies is low resolution, resulting in multiple cells in each spatial proteomics spot. While methods have been proposed to infer the composition of potential cell types in such spots for spatial transcriptomics, the depressed correlation and divergent quantification between transcriptome and proteome limits their capability in spatial proteomics.
-To enhance the utility of spatial proteomics data, we propose Spatial-DC (Spatial Digital Cytometry), a deep learning-based framework that infers cell-type composition in each spot and reconstructs spatially and cell-type resolved proteomic profiles. We achieve this by utilizing transfer learning and self-supervised learning with graph convolutional networks (GCN), which enables the incorporation of target spatial proteomics with reference single-cell or single-cell-type proteomics data.
-Through extensive simulations of spatial proteomics data, we demonstrate that Spatial-DC outperforms eight state-of-the-art methods in estimating cell-type composition and provides meaningful reconstructions of proteomic profiles for individual cell types. We apply Spatial-DC to different tissues measured using both multiplexed antibody-based and mass spectrometry (MS)-based spatial proteomics technologies. The results showcase Spatial-DC’s superior sensitivity in providing more refined cell-type distribution maps compared to cell-type-specific marker-based distributions and its feasibility in reconstructing spatially and cell-type resolved proteomic profiles from real-world spatial proteomics data. Moreover, we validate Spatial-DC with a newly self-collected pancreatic cancer spatial proteomics data characterized by complex tumor microenvironment (TME) and identify the signaling direction and strength at both spatial and cell-type levels within the TME, suggesting cell-type-specific and spatially-resolved interactions linked to tumor outcomes. 
-Our results highlight Spatial-DC as a versatile tool for the deconvolution of spatial proteomics data across various tissue slices, providing a reliable foundation for downstream analysis.
-
-For more information, please refer to [xxx](xxx)
+We achieve this by utilizing transfer learning and self-supervised learning with graph convolutional networks (GCN), which enables the incorporation of target spatial proteomics with reference single-cell or single-cell-type proteomics data.
 
 <p align="center">
   <img width="80%" src=./images/workflow_B.jpg>
 </p>
 
+For more information, please refer to [xxx](xxx)
 ## Dependences
 
 [![torch-1.10.0](https://img.shields.io/badge/torch-1.10.0-red)](https://github.com/pytorch/pytorch) 
