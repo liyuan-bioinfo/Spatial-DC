@@ -102,8 +102,6 @@ class DNN(nn.Module):
         
         return ct_perc, protein_weight
     
-
-
 class GCN(nn.Module):
 
     state = {}
@@ -157,7 +155,6 @@ class GCN(nn.Module):
         # task-1 cell-abundance prediction
         ct_perc = self.classifier(feat) # [5577, 40] -> [5577, 19]                        
         temp_sum = ct_perc.sum(axis=1) + 1e-6
-        # temp_sum = torch.where(temp_sum == 0, 1, temp_sum)
         ct_perc = (ct_perc.T/temp_sum).T                
 
         # task-2, protein weight
@@ -165,7 +162,6 @@ class GCN(nn.Module):
         protein_weight = protein_weight.reshape(feat.shape[0]*self.protein_num,self.ct_num)#protein spot * celltype
 
         temp_sum = protein_weight.sum(axis=1) + 1e-6
-        # temp_sum = torch.where(temp_sum == 0, 1, temp_sum)
         protein_weight = (protein_weight.T/temp_sum).T
         protein_weight = protein_weight.reshape(feat.shape[0], self.protein_num * self.ct_num)#protein spot * celltype
 
@@ -177,7 +173,6 @@ class GCN(nn.Module):
         
         return ct_perc, x_dec, gae_loss,protein_weight
 
-    # 计算GAE Loss
     def recon_loss(self, z, edge_weight, pos_edge_index, neg_edge_index=None): # edge weight
         pos_dec = self.vgae.decoder(z, pos_edge_index, sigmoid=True)
         
@@ -243,154 +238,10 @@ class SpatialDC:
             f"celltype_order: {self.celltype_order}"
 
     def setup_distribution_model(self, test_size=0.1, batch_size=128, spot_num=10000, epochs=10, lr=0.001):
-
-        # batch_size: 128 => lr 0.001
-        # batch_size = 128
-        # factor = int(batch_size / 128) - 1
-        # lr = 0.001 * (np.sqrt(2))**factor        
-
-        # prepare simulated data                
-        spot_data, spot_type,_,protein_weight = Utils.generate_simulated_data(sc_data=self.sc_adata,cell_type_obs=self.celltype_obs, 
-                                                                    samplenum=spot_num)        
         
-        self.train_loader, self.valid_loader = Utils.prepare_dataloader(spot_data=spot_data, spot_type=spot_type,protein_weight=protein_weight,test_size=test_size,batch_size=batch_size) # create dataload of sc        
-
         # register model object
         self.distriubtion_model = DNN(protein_num=self.protein_num,ct_num=self.celltype_num).to(device)
         self.distriubtion_model.state = {"lr":lr,"lr_decay":0.95,"lr_step":1,"weight_decay":1e-5,"start_epoch":1,"epochs":epochs,"spot_num":spot_num}
-
-
-    def train_distribution_model(self):
-
-        # set optimizer for weight_decay and scheduler for lr_decay
-        lr = self.distriubtion_model.state["lr"]
-        lr_step = self.distriubtion_model.state["lr_step"]
-        lr_decay = self.distriubtion_model.state["lr_decay"]
-        weight_decay = self.distriubtion_model.state["weight_decay"]
-        start_epoch = self.distriubtion_model.state["start_epoch"]
-        epochs = self.distriubtion_model.state["epochs"]
-
-
-        params = []
-        for key, value in dict(self.distriubtion_model.named_parameters()).items():
-            if 'bias' in key:
-                params.append({'params': [value], 'lr': lr, 'weight_decay': 0})
-            else:
-                params.append({'params': [value], 'lr': lr, 'weight_decay': weight_decay,'betas':[0.9,0.999]})
-            
-        optimizer = torch.optim.Adam(params)
-        
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, lr_step, gamma=lr_decay)
-
-        TRAIN_LOSS = []
-        TRAIN_X_RECON_LOSS = []
-        TRAIN_X_PROP_LOSS = []
-
-        VALID_LOSS = []
-        VALID_X_RECON_LOSS = []
-        VALID_X_PROP_LOSS = []
-
-        VALID_METRIC = []
-
-        criterion = torch.nn.L1Loss()
-        # criterion = torch.nn.MSELoss()#
-        for epoch in range(start_epoch, epochs + 1):
-
-            # ************** Train ************** #
-            if(self.print_info):
-                print('[Epoch %2d][Lr  %.e]' % (epoch, scheduler.get_last_lr()[0]))
-            self.distriubtion_model.train()
-            train_loss = 0
-            train_x_recon_loss = 0
-            train_cell_prop = 0
-
-            # Train model.
-            for batch_idx, (protein_intensity, ct_perc, protein_weight) in enumerate(self.train_loader):
-                                
-                protein_intensity  = protein_intensity.float().to(device)
-                ct_perc = ct_perc.float().to(device)
-                protein_weight = protein_weight.float().to(device)
-                
-
-                # Forward propagation.
-                with torch.cuda.amp.autocast():
-                
-                    pred_cell_perc, pred_protein_weight = self.distriubtion_model(protein_intensity)                    
-
-                    loss = criterion(pred_cell_perc, ct_perc) + criterion(pred_protein_weight, protein_weight)                    
-                                        
-                train_loss += loss.item() 
-
-                # if math.isnan(train_loss):
-                #     epochs = epoch-1                                        
-                #     break
-
-                # Backward propagation.
-                optimizer.zero_grad()
-                loss.backward()
-                
-                optimizer.step()
-
-                if(self.print_info):
-                    print('[Epoch %2d][Iter %4d/ %4d] Loss: %.5f \r'
-                        % (epoch, batch_idx + 1, len(self.train_loader), train_loss / (batch_idx + 1)), end='')
-
-
-            # if math.isnan(train_loss):
-            #     epochs = epoch-1
-            #     break
-            # Update global variables.
-            TRAIN_LOSS.append(train_loss / len(self.train_loader))            
-
-            # ************** Valid ************** #
-            self.distriubtion_model.eval()
-            valid_loss = 0
-
-            # Validate model.
-            with torch.no_grad():
-                for batch_idx, (protein_intensity, cell_perc,protein_weight) in enumerate(self.valid_loader):
-                    protein_intensity = protein_intensity.float().to(device)
-                    cell_perc = cell_perc.float().to(device)
-                    protein_weight = protein_weight.float().to(device)
-                    
-                    pred_cell_perc,pred_protein_weight = self.distriubtion_model(protein_intensity)
-                    
-                    valid_loss = criterion(cell_perc, pred_cell_perc) + criterion(protein_weight, pred_protein_weight)
-                    
-            
-            VALID_LOSS.append(valid_loss / len(self.valid_loader))
-
-
-            if(self.print_info):
-                print('[Epoch %2d][Train] Loss: %.5f [Valid] Loss: %.5f ' % (epoch, TRAIN_LOSS[-1], VALID_LOSS[-1]))
-
-            self.distriubtion_model.state.update({
-                'model': self.distriubtion_model.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'epoch': epoch,
-                'train_loss': TRAIN_LOSS,
-                'valid_loss': VALID_LOSS,
-                'lr': scheduler.get_last_lr()[0],
-            })
-            scheduler.step()
-
-
-    def save_distribution_model(self, save_model_path):
-
-
-        torch.save(self.distriubtion_model.state, save_model_path)
-                
-        # train_loss = self.distriubtion_model.state["train_loss"]
-        # valid_loss = self.distriubtion_model.state["valid_loss"]
-        # epochs = self.distriubtion_model.state["epochs"]
-        # spot_num = self.distriubtion_model.state["spot_num"]
-        
-        # plt.plot(np.arange(0,epochs), train_loss)
-        # plt.xlabel('Epochs')
-        # plt.ylabel('Loss')
-        # plt.title(f'Simu_Spot:[{spot_num}] | Train Loss:[{"%.4f" % train_loss[-1]}] | Valid Loss:[{"%.4f" % valid_loss[-1]}]')
-        # plt.savefig(f"{save_model_path}.png")
-        # plt.close()        
 
     def load_distribution_model(self, load_model_path):
         self.distriubtion_model = DNN(protein_num=self.protein_num,ct_num=self.celltype_num).to(device)
@@ -404,15 +255,8 @@ class SpatialDC:
     def transfer_distribution_model(self):
 
         self.distriubtion_model.eval()
-        inputs = self.sp_adata.X.toarray() # 2492 * 205
-        
-        # inputs = scale(inputs,axis=1) # sample
-        # Normalized total
-        # target_sum = np.median(np.sum(inputs,axis=1))
-        # total_counts = np.sum(inputs, axis=1)
-        # inputs = inputs / total_counts[:, np.newaxis]
-        # inputs = inputs * target_sum        
-
+        inputs = self.sp_adata.X.toarray()
+           
         inputs = np.log1p(inputs)
         inputs = scale(inputs,axis=1) #sample
         
@@ -489,7 +333,7 @@ class SpatialDC:
             with torch.cuda.amp.autocast():
 
                 outputs, x_dec, gae_loss,pred_protein_weight = self.reconstruction_model(inputs, edge_index, edge_weight)
-                dae_loss = F.mse_loss(x_dec, inputs) # MSELoss, 内部固定写. 
+                dae_loss = F.mse_loss(x_dec, inputs)
                                 
                 cls_loss = criterion(outputs, targets)
 
@@ -525,31 +369,14 @@ class SpatialDC:
 
         return(self.sp_adata)
 
-    def save_reconstruction_model(self, save_model_path):
-
-        torch.save(self.reconstruction_model.state, save_model_path)
-                
-        # train_loss = self.reconstruction_model.state["train_loss"]
-        # epochs = self.reconstruction_model.state["epochs"]
-                
-        # plt.plot(np.arange(0,epochs), train_loss)
-        # plt.xlabel('Epochs')
-        # plt.ylabel('Loss')
-        # plt.title(f'Train Loss:[{"%.4f" % train_loss[-1]}]')
-        # plt.savefig(f"{save_model_path}.png")
-        # plt.close()     
-
     # extended function-1
-    # purify cell-type expression profiles from each spot
+    # dissect cell-type expression profiles from each spot
     # downstream tasks: novel celltype markers; far or near distance cells; protein protein interactions
     def purify_spots(self, norm=True, spatial_info=False):        
         sp_purified_adata = self.sp_adata.copy()
 
         cellperc_pred = sp_purified_adata.uns["cellperc_reconstruct"]
         protein_weight_pred = sp_purified_adata.uns["protein_weight_reconstruct"]        
-        # cellperc_pred = sp_purified_adata.uns["cellperc_initial"]
-        # protein_weight_pred = sp_purified_adata.uns["protein_weight_pred"]        
-
         
         # before normalized
         purified_weight_arr = protein_weight_pred.T # spot * nfeatures, protein weight        
@@ -628,40 +455,4 @@ class SpatialDC:
                 
 
         return(purified_ct_adata_final)
-
-    # extended function-2
-    # enhance the spot's resolution with 10 cells for each spot
-    # downstream tasks: cell-cell communications
-    def enhance_resolution(self,cellnum_in_spot=10):
-        purified_adata = self.purify_spots()
-
-        cellperc_pred = self.sp_adata.uns["cellperc_reconstruct"]
-
-        enhanced_adata = None           
-        prop = np.array(cellperc_pred) # 把细胞比例转换成细胞数量 
-        cell_nums = np.floor(cellnum_in_spot * prop) # 可以增加超参增加单个spot组成的细胞数量
-
-        for i, spot_cell_num in enumerate(cell_nums): #每个spot中的细胞数量
-            for j, ct_cell_num in enumerate(spot_cell_num): #每个细胞的数量
-
-                spot_index = self.obs_index[i] # 每个spot的index
-                ct_index = self.celltype_order[j] # 每个ct的index
-
-                if (ct_cell_num>0):
-                    expand_index = [spot_index+"_"+ct_index for x in range(int(ct_cell_num))]
-                    sub_adata = purified_adata[expand_index,:] # 使用直接复制的策略, 需要改成平均值的策略
-                    
-                    # sub_adata.X = sub_adata / ct_cell_num # 均分到每个细胞类型
-                    if enhanced_adata is None:
-                        enhanced_adata = sub_adata.copy()        
-                    else:
-                        enhanced_adata = ad.AnnData.concatenate(enhanced_adata, sub_adata, join='outer', batch_key='batch').copy()
-
-        Cords = np.array(self.sp_adata.obsm["spatial"]) #spatial cords
-        # 重新设置index; 重新分配spatial-grid          
-        Cords_new = Utils.getHighresCords(Cords=Cords, numCell=np.sum(cell_nums,axis=1))
-
-        enhanced_adata.obsm["spatial"] = Cords_new[:,[0,1]].astype('float64')
-
-        return(enhanced_adata)
 
