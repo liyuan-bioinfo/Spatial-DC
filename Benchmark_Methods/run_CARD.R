@@ -4,21 +4,18 @@ library(dplyr)
 library(SeuratDisk)
 library(MuSiC)
 
-
+# ----------------------------
 start_time = Sys.time()
-
-setwd("") # change - 1
-
+setwd("")
 reference_data_dir = ""
 sp_data_dir = ""
 
-method = "CARD" # change - 2
+method = "CARD"
 output_dir = paste("03_output/exp_v1",method,sep="/")
 
 if (!file.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
-
 
 run_CARD = function(sc_exp, sc_meta, spatial_count, spatial_location, output_file_path=output_file_path){
     
