@@ -7,11 +7,12 @@ import os
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 import time
+
+# -----------------------------------------------------------------------
 start_time = time.time()
 
 def run_Tangram(sc_adata, sp_adata, celltype_key,cond, output_file_path):
 
-    ## Find DEG for sc
     sc.pp.log1p(sc_adata)
     sc.tl.rank_genes_groups(sc_adata, groupby=celltype_key, use_raw=False)
 
@@ -49,7 +50,7 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)                
 
 # Run    
-for cond in ["top100","top200","top400","top600","top800","top1003","tail600","tail800","tail100","tail200","tail400"]: 
+for cond in ["top100","top200","top400","top600","top800","tail600","tail800","tail100","tail200","tail400"]: 
 # for cond in ["top600","top800","top1003","tail600","tail800"]: 
     for seed in [0]:
         for cells in [10,15,20]:
