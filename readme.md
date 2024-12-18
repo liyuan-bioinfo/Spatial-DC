@@ -1,6 +1,4 @@
-# Spatial-DC
-
-## deep learning-based method for deconvolution of spatial proteomics
+# Spatial-DC: a robust deep learning-based method for deconvolution of spatial proteomics
 
 <p align="center">
   <img width="80%" src=./images/workflow_A.jpg>
