@@ -8,10 +8,6 @@ Spatial-DC (**S**patial-**D**igital **C**ytometry) is a robust deep learning-bas
 </p>
 We achieve this by utilizing transfer learning and self-supervised learning with graph convolutional networks (GCN), which enables the incorporation of target spatial proteomics with reference single-cell or single-cell-type proteomics data.
 
-<p align="center">
-  <img width="80%" src=./images/workflow_B.jpg>
-</p>
-
 For more information, please refer to [xxx](xxx)
 ## Dependences
 
