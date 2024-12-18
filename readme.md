@@ -20,7 +20,7 @@ For more information, please refer to [xxx](xxx)
 [![torch__geometric-2.0.4](https://img.shields.io/badge/torch__geometric-2.0.4-blueviolet)](https://github.com/pyg-team/pytorch_geometric/)
 
 ## Tutorial
-The following notebooks are provided to show how to run Spatial-DC model
+The details of how to run Spatial-DC are provided [Tutorials]
 
 ## Disclaimer
 This tool is for research purpose and not approved for clinical use.
