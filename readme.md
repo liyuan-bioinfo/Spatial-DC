@@ -4,7 +4,7 @@
   <img width="80%" src=workflow.jpg>
 </p>
 
-<p align="center"> Spatial-DC (**S**patial-**D**igital **C**ytometry). </p>
+<p align="center"><strong>Fig. </strong>| Spatial-DC (**S**patial-**D**igital **C**ytometry). </p>
 
 ## Tutorial
 The details of how to run Spatial-DC are provided [Tutorials]
