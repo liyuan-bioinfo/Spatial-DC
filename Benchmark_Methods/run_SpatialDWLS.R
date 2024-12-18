@@ -1,11 +1,12 @@
 library(Giotto)
 library(dplyr)
-
 instrs = createGiottoInstructions(save_plot = FALSE,show_plot = FALSE,python_path="/usr/bin/python3")
 
+
+# -----------------------------------------------------
 start_time = Sys.time()
 
-setwd("") # change - 1
+setwd("")
 
 reference_data_dir = "01_data/reference/synthetic_noise_v2"
 sp_data_dir = "01_data/simulations/synthetic_cellnum_noise_v2"
