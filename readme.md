@@ -1,7 +1,7 @@
 # Spatial-DC: a robust deep learning-based method for deconvolution of spatial proteomics
 
 <p align="center">
-  <img width="80%" src=.workflow.jpg>
+  <img width="80%" src=workflow.jpg>
 </p>
 
 Spatial-DC (**S**patial-**D**igital **C**ytometry) is a robust deep learning-based method for deconvolution of spatial proteomics, involving infers cell-type composition in each spot and reconstructs spatially and cell-type resolved proteomic profiles. We achieve this by utilizing transfer learning and self-supervised learning with graph convolutional networks (GCN), which enables the incorporation of target spatial proteomics with reference single-cell or single-cell-type proteomics data.
