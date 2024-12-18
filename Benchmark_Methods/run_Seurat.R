@@ -2,9 +2,10 @@ library(Seurat)
 library(dplyr)
 library(SeuratDisk)
 
+# --------------------------------------------
 start_time = Sys.time()
 
-setwd("") # change - 1
+setwd("")
 
 sc_file_path = "01_data/reference/scp2021_1003_Reference.h5seurat"
 sc_meta_path = "01_data/reference/scp2021_1003_Reference_meta.csv"
