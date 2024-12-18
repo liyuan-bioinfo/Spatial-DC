@@ -4,20 +4,20 @@ library(SeuratDisk)
 library(SPOTlight)
 
 
+# ------------------------------------------------
 start_time = Sys.time()
 
-setwd("") # change - 1
+setwd("")
 
 reference_data_dir = "01_data/reference/synthetic_noise_v2"
 sp_data_dir = "01_data/simulations/synthetic_cellnum_noise_v2"
 
-method = "SPOTlight" # change - 2
+method = "SPOTlight"
 output_dir = paste("03_output/exp_conditions_v2",method,sep="/")
 
 if (!file.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
-
 
 run_SPOTlight = function(reference, query, mgs, output_file_path=output_file_path){
     
