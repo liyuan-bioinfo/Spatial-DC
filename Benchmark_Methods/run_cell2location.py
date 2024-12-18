@@ -146,7 +146,6 @@ for cond in ["top100","top200","top400","top600","top800","tail600","tail800","t
 
                 run_Cell2location(sc_adata=sc_adata, sp_adata=sp_adata,
                         output_file_path=output_file_path,sp_epochs=5000,sc_epochs=10000,
-                        # output_file_path=output_file_path,sp_epochs=5,sc_epochs=5,
                         celltype_key=celltype_key)            
 
 end_time = time.time()
