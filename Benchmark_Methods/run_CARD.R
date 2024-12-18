@@ -9,11 +9,11 @@ start_time = Sys.time()
 
 setwd("") # change - 1
 
-reference_data_dir = "01_data/reference/synthetic_noise_v2"
-sp_data_dir = "01_data/simulations/synthetic_cellnum_noise_v2"
+reference_data_dir = ""
+sp_data_dir = ""
 
 method = "CARD" # change - 2
-output_dir = paste("03_output/exp_conditions_v2",method,sep="/")
+output_dir = paste("03_output/exp_v1",method,sep="/")
 
 if (!file.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
