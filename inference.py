@@ -9,22 +9,14 @@ import os
 import time
 start_time = time.time()
 
-# train sc model
-def train_SpatialDC(sc_adata, sp_adata, celltype_key):
-    spatial_dc = SpatialDC(sc_adata=sc_adata, sp_adata=sp_adata, print_info=True) 
-    spatial_dc.setup_distribution_model(spot_num=10000, epochs=200, batch_size=128, lr=0.001) # Then, setup distribution_model, users can change default params such as learning rate or epochs
-    spatial_dc.train_distribution_model() # Begin train this model, which need some times
-    spatial_dc.save_distribution_model(save_model_path = model_path)
-
 def run_SpatialDC(sc_adata, sp_adata, celltype_key,output_file_path):
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)           
-
     if not os.path.exists(model_path):        
-        train_SpatialDC(sc_adata, sp_adata, celltype_key)  
+        exit() # should set correct path of model
    
-    spatial_dc = SpatialDC(sc_adata=sc_adata, sp_adata=sp_adata, print_info=True) 
+    spatial_dc = SpatialDC(sc_adata=sc_adata, sp_adata=sp_adata) 
     spatial_dc.load_distribution_model(load_model_path = model_path) # Users also can load trained model
+
+    # predict intermediate results with transfer model
     pred_sp_adata = spatial_dc.transfer_distribution_model()
     pred_sp_adata.uns["cellperc_initial"].to_csv(output_file_path + "_initial.csv")
     pred_sp_adata.write_h5ad(output_file_path + "_initial.h5ad")
@@ -35,6 +27,7 @@ def run_SpatialDC(sc_adata, sp_adata, celltype_key,output_file_path):
     purified_sp_adata = spatial_dc.initial_purify_spots(norm=False, spatial_info=False)
     purified_sp_adata.write_h5ad(output_file_path + "_initial_not_norm.h5ad")
 
+    # refined intermediate results with self-supervisd model
     spatial_dc.setup_reconstruction_model(k_graph=30, epochs=200, w_cls=25, w_rec=25) # With trained distribution model, users can transfer it with register spatial proteomics data.    
     reconstruct_sp_adata = spatial_dc.reconstruct()
     reconstruct_sp_adata.write_h5ad(output_file_path + "_reconstruct.h5ad")
@@ -47,13 +40,13 @@ def run_SpatialDC(sc_adata, sp_adata, celltype_key,output_file_path):
 
     reconstruct_sp_adata.uns["cellperc_reconstruct"].to_csv(output_file_path + "_reconstruct.csv")
 
-    reconstruct_sp_adata = spatial_dc.reconstruct()
 
+# ------------------------------------------------------------
+# deconvolution of synthetic, public and in-house spatial proteomics data
 os.chdir("")
-# set datasets
 datasets = ["NSCLC", "HumanTonsil", "MouseBrain", "MousePDAC"]
 
-method = "SpatialDC_v7_1"
+method = "SpatialDC"
 celltype_key = "celltype"
 
 for dataset in datasets:
@@ -90,6 +83,7 @@ for dataset in datasets:
     sc.pp.normalize_total(sc_adata)
     sc.pp.normalize_total(sp_adata)
     run_SpatialDC(sc_adata=sc_adata, sp_adata=sp_adata, celltype_key=celltype_key,output_file_path=output_file_path)
+
 
 end_time = time.time()
 print("Total time consumption: seconds")
