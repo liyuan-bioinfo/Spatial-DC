@@ -12,10 +12,11 @@ warnings.filterwarnings("ignore")
 
 import scvi
 from scvi.model import CondSCVI, DestVI
-# os.environ["THEANO_FLAGS"] = 'device=cuda1,floatX=float32,force_device=True'
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import time
+
+# ----------------------------------------------------------
 start_time = time.time()
 
 def train_DestVI(sc_adata,sp_adata, celltype_key,sc_epochs):
@@ -30,8 +31,7 @@ def train_DestVI(sc_adata,sp_adata, celltype_key,sc_epochs):
     plt.legend()
     plt.savefig(model_path + '.png')
     plt.close()
-        
-###--------------------------- PART III, Train Spatial model ----------------------------------
+
 def run_DestVI(sc_adata, sp_adata, celltype_key, output_file_path, sc_epochs, sp_epochs):  
     
     ## train DestVI
@@ -45,7 +45,6 @@ def run_DestVI(sc_adata, sp_adata, celltype_key, output_file_path, sc_epochs, sp
         # os.makedirs(model_dir)    # not need to create model_dir
         train_DestVI(sc_adata, sp_adata, celltype_key,sc_epochs=sc_epochs)
 
-
     CondSCVI.setup_anndata(sc_adata, labels_key=celltype_key)
     sc_model = CondSCVI.load(model_dir, adata=sc_adata)
     
@@ -56,16 +55,7 @@ def run_DestVI(sc_adata, sp_adata, celltype_key, output_file_path, sc_epochs, sp
     spatial_model.train(max_epochs=sp_epochs,use_gpu=True)
 
     spatial_model.get_proportions().to_csv(output_file_path+".csv")
-
-    # # plot sp-loss
-    # plt.plot(spatial_model.history["elbo_train"], label="train")
-    # plt.title("DestVI_sp_train")
-    # plt.legend()
-    # plt.savefig(output_file_path + '_pred.png')
-    # plt.close()
  
-
-# start running
 os.chdir("")
 
 # cell-type data
@@ -79,7 +69,7 @@ output_dir = f"03_output/exp_conditions_v4/{method}/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)   
 
-for cond in ["top100","top200","top400","top600","top800","top1003","tail600","tail800","tail100","tail200","tail400"]: 
+for cond in ["top100","top200","top400","top600","top800","tail600","tail800","tail100","tail200","tail400"]: 
 
     model_dir = f"{output_dir}/{method}model_raw_raw_Reference_{cond}/"
     model_path = f"{model_dir}/model.pt"            
@@ -88,7 +78,6 @@ for cond in ["top100","top200","top400","top600","top800","top1003","tail600","t
         for cells in [10,15,20]:
             for noise in [0]:   
                 
-                            
                 sc_file_path = f"{reference_data_dir}/scp2021_1003_Reference_{cond}.h5ad"
                 sp_file_path = f"{sp_data_dir}/Simu_seed{seed}_cells{str(cells)}_noise{int(noise*100)}.h5ad"
                                 
