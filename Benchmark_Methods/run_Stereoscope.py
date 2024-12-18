@@ -12,10 +12,11 @@ warnings.filterwarnings("ignore")
 
 import scvi
 from scvi.external import RNAStereoscope, SpatialStereoscope
-# os.environ["THEANO_FLAGS"] = 'device=cuda1,floatX=float32,force_device=True'
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import time
+
+# ------------------------------------------
 start_time = time.time()
 
 def train_Stereoscope(sc_adata,sp_adata, celltype_key,sc_epochs):
@@ -29,8 +30,7 @@ def train_Stereoscope(sc_adata,sp_adata, celltype_key,sc_epochs):
     sc_model.history["elbo_train"].plot()
     plt.savefig(model_path + '.png')
     plt.close()
-        
-###--------------------------- PART III, Train Spatial model ----------------------------------
+
 def run_Stereoscope(sc_adata,sp_adata, output_file_path, sc_epochs,sp_epochs,celltype_key):
 
     sc_adata.X = round(sc_adata.X)
@@ -59,7 +59,6 @@ def run_Stereoscope(sc_adata,sp_adata, output_file_path, sc_epochs,sp_epochs,cel
     # plt.savefig((output_file_path + '.png'))
  
 
-# start running
 os.chdir("")
 
 # cell-type data
@@ -73,7 +72,7 @@ output_dir = f"03_output/exp_conditions_v4/{method}/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)   
 
-for cond in ["top100","top200","top400","top600","top800","top1003","tail600","tail800","tail100","tail200","tail400"]: 
+for cond in ["top100","top200","top400","top600","top800","tail600","tail800","tail100","tail200","tail400"]: 
 
     model_dir = f"{output_dir}/{method}model_raw_raw_Reference_{cond}/"
     model_path = f"{model_dir}/model.pt"            
