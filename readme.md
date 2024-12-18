@@ -14,7 +14,7 @@ The advance of single-cell proteomics sequencing technology sheds light on the r
 For more information, please refer to [xxx](xxx)
 
 <p align="center">
-  <img width="80%" src=./image/workflow.tif>
+  <img width="80%" src=./image/workflow_A.jpg>
 </p>
 
 ## Dependences
