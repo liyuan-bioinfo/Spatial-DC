@@ -1,5 +1,5 @@
 # Spatial-DC
-[![python >3.8.12](https://img.shields.io/badge/python-3.8.12-brightgreen)](https://www.python.org/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14386585.svg)](https://doi.org/10.5281/zenodo.14386585)
+
 
 Spatial-DC (**S**patial-**D**igital **C**ytometry) is a robust deep learning-based method for deconvolution of spatial proteomics, involving infers cell-type composition in each spot and reconstructs spatially and cell-type resolved proteomic profiles.
 
@@ -208,7 +208,7 @@ You can post an [issue](https://github.com/TencentAILabHealthcare/scPROTEIN/issu
 
 # -----------
 
-
+[![python >3.8.12](https://img.shields.io/badge/python-3.8.12-brightgreen)](https://www.python.org/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14386585.svg)](https://doi.org/10.5281/zenodo.14386585)
 
 ## Citation
 
