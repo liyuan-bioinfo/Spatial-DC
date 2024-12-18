@@ -11,10 +11,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import cell2location
-# os.environ["THEANO_FLAGS"] = 'device=cuda1,floatX=float32,force_device=True'
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import time
+
+# ---------------------------------------------
 start_time = time.time()
 
 def train_Cell2location(sc_adata,sp_adata, celltype_key,sc_epochs):
@@ -66,9 +67,7 @@ def run_Cell2location(sc_adata,sp_adata, output_file_path, celltype_key,sc_epoch
                                         for i in sc_adata.uns['mod']['factor_names']]].copy()
     inf_aver.columns = sc_adata.uns['mod']['factor_names']
 
-    # train sp
-    
-
+    # train sp    
     intersect = np.intersect1d(sp_adata.var_names, inf_aver.index)
     sp_adata = sp_adata[:, intersect].copy()
     inf_aver = inf_aver.loc[intersect, :].copy()
@@ -95,15 +94,9 @@ def run_Cell2location(sc_adata,sp_adata, output_file_path, celltype_key,sc_epoch
         sp_adata, sample_kwargs={'num_samples': 1000, 'batch_size': mod.adata.n_obs, 'use_gpu': True}
         # sp_adata, sample_kwargs={'num_samples': 1000, 'batch_size': 2, 'use_gpu': True}
     )
-
-    # sp_adata.obs[sp_adata.uns['mod']['factor_names']] = sp_adata.obsm['q05_cell_abundance_w_sf']
-
-
+    
     cell2loc_results = sp_adata.obsm['q05_cell_abundance_w_sf']
-    # cell2loc_results = sp_adata.obs
-
     cell2loc_results = (cell2loc_results.T/cell2loc_results.sum(axis=1)).T
-    # cell2loc_results = cell2loc_results.fillna(0)
 
     # change columns 
     celltype2=[]
@@ -114,8 +107,6 @@ def run_Cell2location(sc_adata,sp_adata, output_file_path, celltype_key,sc_epoch
 
     cell2loc_results.to_csv(output_file_path+".csv")
     
-
-# start running
 os.chdir("")
 
 # cell-type data
@@ -129,7 +120,7 @@ output_dir = f"03_output/exp_conditions_v4/{method}/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)   
 
-for cond in ["top100","top200","top400","top600","top800","top1003","tail600","tail800","tail100","tail200","tail400"]: 
+for cond in ["top100","top200","top400","top600","top800","tail600","tail800","tail100","tail200","tail400"]: 
 
     model_dir = f"{output_dir}/{method}model_raw_raw_Reference_{cond}/"
     model_path = f"{model_dir}/model.pt"            
@@ -137,8 +128,7 @@ for cond in ["top100","top200","top400","top600","top800","top1003","tail600","t
     for seed in [0]:
         for cells in [10,15,20]:
             for noise in [0]:   
-                
-                            
+                                            
                 sc_file_path = f"{reference_data_dir}/scp2021_1003_Reference_{cond}.h5ad"
                 sp_file_path = f"{sp_data_dir}/Simu_seed{seed}_cells{str(cells)}_noise{int(noise*100)}.h5ad"
                                 
