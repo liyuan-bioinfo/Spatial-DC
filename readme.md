@@ -4,22 +4,7 @@
   <img width="80%" src=workflow.jpg>
 </p>
 
-Spatial-DC (**S**patial-**D**igital **C**ytometry) is a robust deep learning-based method for deconvolution of spatial proteomics, involving infers cell-type composition in each spot and reconstructs spatially and cell-type resolved proteomic profiles. We achieve this by utilizing transfer learning and self-supervised learning with graph convolutional networks (GCN), which enables the incorporation of target spatial proteomics with reference single-cell or single-cell-type proteomics data.
-
-## Introduction to File Directory
-This repository contains various subdirectories and source code files related to downstream analysis. Here's an overview of each subdirectory:
-
-### benchmark_methods
-This subdirectory provides the used code for running the benchmark methods on spatial proteomics data. 
-
-### Spatial_DC_V1
-The `Spatial_DC_V1` subdirectory contains the source code for running Spatial-DC, which is a specific deep learning-based method for spatial proteomics deconvolution.
-
-### downstream_applications
-The `downstream_applications` subdirectory provides the source code for performing downstream analysis and visualization of spatial proteomics data. This includes scripts for data interpretation, visualization techniques, or additional analysis steps that build upon the results obtained from benchmark methods or Spatial-DC.
-
-### tools
-The `tools` subdirectory contains code for other common analysis tasks related to spatial proteomics data. This includes utilities for calculating evaluation metrics, transforming data formats (e.g., converting h5seurat to h5ad), or other analysis-related functions that are not specific to a single method or application.
+<p align="center"> Spatial-DC (**S**patial-**D**igital **C**ytometry). </p>
 
 ## Tutorial
 The details of how to run Spatial-DC are provided [Tutorials]
