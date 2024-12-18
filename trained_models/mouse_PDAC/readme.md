@@ -1,1 +1,0 @@
-Introduction of trained details.
