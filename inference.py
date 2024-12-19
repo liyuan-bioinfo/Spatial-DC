@@ -14,7 +14,7 @@ def run_SpatialDC(sc_adata, sp_adata, celltype_key,output_file_path):
         exit() # should set correct path of model
    
     spatial_dc = SpatialDC(sc_adata=sc_adata, sp_adata=sp_adata) 
-    spatial_dc.load_distribution_model(load_model_path = model_path) # Users also can load trained model
+    spatial_dc.load_distribution_model(load_model_path = model_path) # Load trained DIS model
 
     # predict intermediate results with transfer model
     pred_sp_adata = spatial_dc.transfer_distribution_model()
@@ -28,7 +28,7 @@ def run_SpatialDC(sc_adata, sp_adata, celltype_key,output_file_path):
     purified_sp_adata.write_h5ad(output_file_path + "_initial_not_norm.h5ad")
 
     # refined intermediate results with self-supervisd model
-    spatial_dc.setup_reconstruction_model(k_graph=30, epochs=200, w_cls=25, w_rec=25) # With trained distribution model, users can transfer it with register spatial proteomics data.    
+    spatial_dc.setup_reconstruction_model(k_graph=30, epochs=200, w_cls=25, w_rec=25) # With trained DIS model, users can transfer it with register spatial proteomics data.    
     reconstruct_sp_adata = spatial_dc.reconstruct()
     reconstruct_sp_adata.write_h5ad(output_file_path + "_reconstruct.h5ad")
 
