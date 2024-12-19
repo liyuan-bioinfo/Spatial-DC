@@ -1,4 +1,5 @@
 # Spatial-DC: a robust deep learning-based method for deconvolution of spatial proteomics
+[![python >3.8.10](https://img.shields.io/badge/python-3.8.10-brightgreen)](https://www.python.org/)
 
 <p align="center">
   <img width="80%" src=workflow.jpg>
